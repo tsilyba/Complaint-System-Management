@@ -1,0 +1,69 @@
+/* public/css/resident.css */
+
+:root {
+    --primary-brown: #6d4c41;
+    --primary-brown-hover: #5d4037;
+    --bg-light-blue: #f1f8e9; /* Very subtle light blue/green tint */
+    --accent-blue: #e3f2fd;
+}
+
+/* Background Color */
+body {
+    background-color: #f8f9fa;
+}
+
+/* 1. NAVBAR - Turn it Brown */
+.navbar {
+    background-color: var(--primary-brown) !important;
+}
+
+/* 2. CARD HEADERS - Turn them Brown */
+.card-header {
+    background-color: var(--primary-brown) !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Fix icon colors inside card headers so they stay white */
+.card-header h1, 
+.card-header h2, 
+.card-header h3, 
+.card-header h4, 
+.card-header h5, 
+.card-header span,
+.card-header i,
+.card-header .text-primary {
+    color: #ffffff !important;
+}
+
+/* 3. BUTTONS - Override Bootstrap Blue */
+.btn-primary {
+    background-color: var(--primary-brown);
+    border-color: var(--primary-brown);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-brown-hover);
+    border-color: var(--primary-brown-hover);
+}
+
+.btn-outline-primary {
+    color: var(--primary-brown);
+    border-color: var(--primary-brown);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-brown);
+    color: white;
+}
+
+/* 4. TEXT COLORS */
+.text-primary {
+    color: var(--primary-brown) !important;
+}
+
+/* 5. ACTIVE LINKS IN NAVBAR */
+.navbar-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+    border-radius: 5px;
+}

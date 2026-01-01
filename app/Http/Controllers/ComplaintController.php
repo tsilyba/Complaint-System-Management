@@ -9,11 +9,31 @@ use Illuminate\Support\Facades\Storage;
 
 class ComplaintController extends Controller
 {
-    // 1. LIST ALL COMPLAINTS (Index)
-    public function index()
+    // 1. LIST ALL COMPLAINTS (With Search & Filter)
+    public function index(Request $request)
     {
-        // Get only complaints belonging to the logged-in user
-        $complaints = Complaint::where('user_id', Auth::id())->latest()->get();
+        // Start Query: Only get complaints for the logged-in user
+        $query = Complaint::where('user_id', Auth::id());
+
+        // A. Search Filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            // We group these "OR" checks so they don't mess up the "User ID" check
+            $query->where(function($q) use ($search) {
+                $q->where('issue_type', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%")
+                  ->orWhere('id', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // B. Status Filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Execute Query with Pagination (10 items per page)
+        $complaints = $query->latest()->paginate(10);
+
         return view('complaints.index', compact('complaints'));
     }
 
@@ -29,7 +49,7 @@ class ComplaintController extends Controller
         $request->validate([
             'name' => 'required',
             'address' => 'required',
-            'contact_number' => 'required',
+            'contact_number' => 'required', 'numeric', 'digits:11',
             'issue_type' => 'required',
             'description' => 'required',
             'photo' => 'required|image|max:2048',
@@ -51,40 +71,50 @@ class ComplaintController extends Controller
         return redirect()->route('complaints.index')->with('success', 'Complaint lodged successfully!');
     }
 
-    // 4. SHOW EDIT FORM
-    public function edit(Complaint $complaint)
+    // 4. SHOW SINGLE COMPLAINT DETAILS (Added this for the "View" button)
+    public function show($id)
     {
-        // Security: Ensure user owns this complaint
-        if ($complaint->user_id !== Auth::id()) {
-            abort(403);
+        $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
+        return view('complaints.show', compact('complaint'));
+    }
+
+    // 5. SHOW EDIT FORM
+    public function edit($id)
+    {
+        $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
+
+        // Security: Prevent editing if already processed
+        if ($complaint->status !== 'Pending') {
+            return redirect()->route('complaints.index')
+                ->with('error', 'You cannot edit a complaint that is already processed.');
         }
+
         return view('complaints.edit', compact('complaint'));
     }
 
-    // 5. UPDATE COMPLAINT
-    public function update(Request $request, Complaint $complaint)
+    // 6. UPDATE COMPLAINT
+    public function update(Request $request, $id)
     {
-        if ($complaint->user_id !== Auth::id()) {
-            abort(403);
+        $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
+
+        if ($complaint->status !== 'Pending') {
+            abort(403, 'Cannot edit processed complaints.');
         }
 
         $request->validate([
-            'name' => 'required',
             'address' => 'required',
-            'contact_number' => 'required',
+            'contact_number' => 'required', 'numberic', 'digits:11',
             'issue_type' => 'required',
             'description' => 'required',
-            'photo' => 'nullable|image|max:2048', // Photo is optional on update
+            'photo' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['photo', 'name']); // Prevent name change
 
         if ($request->hasFile('photo')) {
-            // Delete old photo
             if ($complaint->image_path) {
                 Storage::disk('public')->delete($complaint->image_path);
             }
-            // Upload new photo
             $data['image_path'] = $request->file('photo')->store('complaints', 'public');
         }
 
@@ -93,14 +123,15 @@ class ComplaintController extends Controller
         return redirect()->route('complaints.index')->with('success', 'Complaint updated successfully!');
     }
 
-    // 6. DELETE COMPLAINT
-    public function destroy(Complaint $complaint)
+    // 7. DELETE COMPLAINT
+    public function destroy($id)
     {
-        if ($complaint->user_id !== Auth::id()) {
-            abort(403);
+        $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
+
+        if ($complaint->status !== 'Pending') {
+             return back()->with('error', 'Cannot delete a complaint that is currently being processed.');
         }
 
-        // Delete photo from storage
         if ($complaint->image_path) {
             Storage::disk('public')->delete($complaint->image_path);
         }

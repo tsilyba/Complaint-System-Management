@@ -1,0 +1,80 @@
+/* public/css/welcome.css */
+
+:root {
+    --primary-brown: #6d4c41;       /* Main Button/Navbar Color */
+    --primary-brown-hover: #5d4037; /* Darker Brown for Hover */
+    --accent-blue: #e3f2fd;         /* Light Blue Backgrounds */
+    --text-brown: #4e342e;          /* Dark Brown Text */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* 1. HERO SECTION - Brown Gradient */
+.hero-section {
+    background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
+    color: white;
+    padding: 100px 0;
+    margin-bottom: 50px;
+}
+
+/* 2. OVERRIDE BOOTSTRAP PRIMARY TEXT (For Logo/Icons) */
+.text-primary {
+    color: var(--primary-brown) !important;
+}
+
+/* 3. OVERRIDE BUTTONS */
+.btn-primary {
+    background-color: var(--primary-brown);
+    border-color: var(--primary-brown);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-brown-hover);
+    border-color: var(--primary-brown-hover);
+}
+
+.btn-outline-primary {
+    color: var(--primary-brown);
+    border-color: var(--primary-brown);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-brown);
+    color: white;
+}
+
+/* 4. FEATURE CARDS */
+.feature-card {
+    transition: transform 0.3s ease-in-out;
+    border: none;
+    border-radius: 15px;
+    background-color: #ffffff;
+    border-bottom: 4px solid var(--accent-blue); /* Blue accent at bottom */
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(109, 76, 65, 0.15) !important;
+}
+
+/* 5. ICON BOXES - Light Blue Background, Brown Icon */
+.icon-box {
+    width: 80px;
+    height: 80px;
+    background-color: var(--accent-blue); /* Light Blue */
+    color: var(--primary-brown);          /* Brown Icon */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+}
+
+.feature-card:hover .icon-box {
+    background-color: var(--primary-brown);
+    color: #ffffff;
+}

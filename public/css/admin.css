@@ -1,0 +1,118 @@
+:root {
+    /* ADMIN THEME PALETTE */
+    --admin-brown: #5d4037;       /* Main Sidebar/Button Color */
+    --admin-brown-dark: #3e2723;  /* Darker Brown for Hover/Active */
+    --soft-yellow-bg: #fffde7;    /* Main Background */
+    --accent-yellow: #fff59d;     /* Highlights/Borders */
+    --text-muted-brown: #d7ccc8;  /* Sidebar Inactive Text */
+}
+
+/* 1. GLOBAL BACKGROUND */
+body {
+    background-color: var(--soft-yellow-bg);
+    color: #3e2723;
+    overflow-x: hidden;
+}
+
+#wrapper {
+    display: flex;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* =============================================
+   SIDEBAR STYLING (Forced Brown Theme)
+   ============================================= */
+.sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background-color: var(--admin-brown) !important; /* Force Brown */
+    min-height: 100vh;
+    position: fixed; 
+    left: -250px; 
+    top: 0;
+    z-index: 1000; 
+    transition: all 0.3s ease;
+    box-shadow: 4px 0 10px rgba(93, 64, 55, 0.2);
+}
+
+/* Sidebar Heading ("ADMIN") - Fixes the Gray Background */
+.sidebar-heading {
+    background-color: var(--admin-brown-dark) !important; /* Darker Brown Header */
+    color: var(--accent-yellow) !important;
+    padding: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+}
+
+/* Sidebar Links */
+.sidebar .list-group-item {
+    background-color: transparent !important; /* Remove white background */
+    color: var(--text-muted-brown) !important; /* Light text */
+    border: none;
+    padding: 15px 20px;
+    font-weight: 500;
+}
+
+/* ACTIVE LINK ("Dashboard" Blue Button Fix) */
+.sidebar .list-group-item.active {
+    background-color: var(--soft-yellow-bg) !important; /* Yellow Background */
+    color: var(--admin-brown) !important; /* Brown Text */
+    border-left: 5px solid var(--accent-yellow) !important;
+    font-weight: bold;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+/* =============================================
+   CONTENT & COMPONENTS
+   ============================================= */
+#page-content-wrapper {
+    width: 100%;
+    background: var(--soft-yellow-bg);
+}
+
+/* Card Headers - Brown */
+.card-header {
+    background-color: var(--admin-brown) !important;
+    color: white !important;
+    border-bottom: 3px solid var(--accent-yellow) !important;
+}
+
+/* Force Header Text White */
+.card-header h1, .card-header h2, .card-header h3, 
+.card-header h4, .card-header h5, .card-header span, .card-header i {
+    color: #ffffff !important;
+}
+
+/* Buttons - Brown */
+.btn-primary {
+    background-color: var(--admin-brown) !important;
+    border-color: var(--admin-brown) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--admin-brown-dark) !important;
+    border-color: var(--admin-brown-dark) !important;
+}
+
+/* "Overview" Cards - Keep colorful but add brown text */
+.card h6.text-muted {
+    color: #5d4037 !important; /* Make "TOTAL REPORTS" etc. brown-ish */
+}
+
+/* =============================================
+   MOBILE/DESKTOP LOGIC (Unchanged)
+   ============================================= */
+#wrapper.toggled .sidebar { left: 0; }
+
+@media (min-width: 768px) {
+    .sidebar { position: relative; left: 0; margin-left: 0; z-index: 1; }
+    #page-content-wrapper { min-width: 0; width: 100%; }
+    #wrapper.toggled .sidebar { margin-left: -250px; }
+}

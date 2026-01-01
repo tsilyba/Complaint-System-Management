@@ -9,7 +9,6 @@ class Complaint extends Model
 {
     use HasFactory;
 
-    // THIS IS THE PART YOU ARE MISSING OR NEED TO FIX
     protected $fillable = [
         'user_id',
         'name',

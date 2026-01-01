@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\NotificationController; // <--- 1. ADD THIS IMPORT
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,21 +15,45 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    //profile routes
+    // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    //complaint routes
+    // Complaint routes
     Route::get('/complaint', [ComplaintController::class, 'create'])->name('complaints.create');
     Route::post('/complaint', [ComplaintController::class, 'store'])->name('complaints.store');
     Route::resource('complaints', ComplaintController::class);
 
+    // ========================================================
+    // 2. NEW NOTIFICATION ROUTES (Add this section)
+    // ========================================================
+    // The "Yellow Button" links to this:
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    
+    // The "Mark as Read" button links to this:
+    Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    // ========================================================
+
+    Route::get('/contact', function () {
+        return view('contact');
+    })->name('contact');
 });
 
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::patch('/admin/complaint/{id}/status', [AdminController::class, 'updateStatus'])->name('admin.updateStatus');
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // 1. Dashboard (The Main Page)
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    // 2. Residents Info (Fixes the "Route not defined" error)
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+
+    // 3. Complaint History (The list view)
+    Route::get('/complaints', [AdminController::class, 'complaints'])->name('complaints');
+
+    // 4. Update Status Action
+    Route::patch('/complaint/{id}/status', [AdminController::class, 'updateStatus'])->name('updateStatus');
 });
 
 require __DIR__.'/auth.php';
