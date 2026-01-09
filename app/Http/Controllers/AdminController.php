@@ -76,10 +76,8 @@ class AdminController extends Controller
 // 4. COMPLAINT HISTORY PAGE (With Search & Filter Logic)
     public function complaints(Request $request)
     {
-        // Start a query (We use the Model directly here for flexible filtering)
         $query = \App\Models\Complaint::with('user')->latest();
 
-        // 1. Handle Search Box
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -92,16 +90,32 @@ class AdminController extends Controller
             });
         }
 
-        // 2. Handle Status Dropdown
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // 3. Get the results (10 per page)
         $complaints = $query->paginate(10);
 
         // 4. Return the view with the filtered data
         return view('admin.complaints', compact('complaints'));
     }
      
+    // 5. Admin CRUD for Users (Bonus)
+    public function deleteUser($id)
+    {
+        $user = User::find($id);
+        if ($user && !$user->is_admin) {
+            $user->delete();
+            return redirect()->back()->with('success', 'User deleted successfully.');
+        }
+        return redirect()->back()->with('error', 'User not found or cannot delete admin.');
+    }
+    public function editUser($id)
+    {
+        $user = User::find($id);
+        if ($user && !$user->is_admin) {
+            return view('admin.edit_user', compact('user'));
+        }
+        return redirect()->back()->with('error', 'User not found or cannot edit admin.');
+    }
 }

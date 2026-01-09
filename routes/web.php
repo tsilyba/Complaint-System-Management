@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\NotificationController; // <--- 1. ADD THIS IMPORT
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,15 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/complaint', [ComplaintController::class, 'store'])->name('complaints.store');
     Route::resource('complaints', ComplaintController::class);
 
-    // ========================================================
-    // 2. NEW NOTIFICATION ROUTES (Add this section)
-    // ========================================================
-    // The "Yellow Button" links to this:
+  
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     
-    // The "Mark as Read" button links to this:
     Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    // ========================================================
 
     Route::get('/contact', function () {
         return view('contact');
@@ -43,16 +38,9 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     
-    // 1. Dashboard (The Main Page)
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-
-    // 2. Residents Info (Fixes the "Route not defined" error)
     Route::get('/users', [AdminController::class, 'users'])->name('users');
-
-    // 3. Complaint History (The list view)
     Route::get('/complaints', [AdminController::class, 'complaints'])->name('complaints');
-
-    // 4. Update Status Action
     Route::patch('/complaint/{id}/status', [AdminController::class, 'updateStatus'])->name('updateStatus');
 });
 

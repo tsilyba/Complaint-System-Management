@@ -52,7 +52,6 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h6 class="text-muted mb-0 fw-bold text-uppercase">In Progress</h6>
-                            <i class="bi bi-hourglass-split text-warning fs-3"></i>
                         </div>
                         @php
                             // Count Pending + In Progress
@@ -71,7 +70,6 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h6 class="text-muted mb-0 fw-bold text-uppercase">Resolved</h6>
-                            <i class="bi bi-check-circle-fill text-success fs-3"></i>
                         </div>
                         @php
                             $resolvedCount = \App\Models\Complaint::where('user_id', Auth::id())
@@ -89,7 +87,6 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h6 class="text-muted mb-0 fw-bold text-uppercase">Total History</h6>
-                            <i class="bi bi-folder-fill text-primary fs-3"></i>
                         </div>
                         @php
                             $totalCount = \App\Models\Complaint::where('user_id', Auth::id())->count();

@@ -22,7 +22,7 @@ class SQLComplaintRepo{
     }
 
     /**
-     * Update status (The "Commit" step of EAI)
+     * Update status of a complaint
      */
     public function updateStatus($id, $newStatus)
     {
@@ -30,8 +30,8 @@ class SQLComplaintRepo{
 
         if ($complaint) {
             $complaint->status = $newStatus;
-            $complaint->save(); // <--- Database Commit
-            return $complaint; // Changed to return the ID instead of the model
+            $complaint->save(); 
+            return $complaint; 
         }
 
         return null;
@@ -39,13 +39,12 @@ class SQLComplaintRepo{
 
     /**
      * Save a new complaint (For Submission Form)
-     * Using your specific fillable fields
      */
     public function store($data)
     {
         $complaint = new Complaint();
         
-        // Mapping your form data to your database columns
+        // Mapping form data to database columns
         $complaint->user_id = $data['user_id'];
         $complaint->name = $data['name'];
         $complaint->address = $data['address'];
@@ -61,6 +60,6 @@ class SQLComplaintRepo{
         }
 
         $complaint->save();
-        return $complaint->id; // Changed to return the ID instead of the model
+        return $complaint->id; 
     }
 }

@@ -4,21 +4,27 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Complaint;
+use App\Repositories\SQLComplaintRepo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\QueryException;
 
 class ComplaintController extends Controller
 {
-    // 1. LIST ALL COMPLAINTS (With Search & Filter)
+    protected $repo;
+
+    public function __construct(SQLComplaintRepo $repo)
+    {
+        $this->repo = $repo;
+    }
+
     public function index(Request $request)
     {
-        // Start Query: Only get complaints for the logged-in user
+       
         $query = Complaint::where('user_id', Auth::id());
 
-        // A. Search Filter
         if ($request->filled('search')) {
             $search = $request->search;
-            // We group these "OR" checks so they don't mess up the "User ID" check
             $query->where(function($q) use ($search) {
                 $q->where('issue_type', 'LIKE', "%{$search}%")
                   ->orWhere('description', 'LIKE', "%{$search}%")
@@ -26,64 +32,59 @@ class ComplaintController extends Controller
             });
         }
 
-        // B. Status Filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Execute Query with Pagination (10 items per page)
         $complaints = $query->latest()->paginate(10);
 
         return view('complaints.index', compact('complaints'));
     }
 
-    // 2. SHOW THE CREATE FORM
     public function create()
     {
         return view('complaints.create');
     }
 
-    // 3. STORE NEW COMPLAINT
+    // 3. REFACTORED STORE METHOD 
     public function store(Request $request)
     {
-        $request->validate([
+        // Validation stays in Controller 
+        $validatedData = $request->validate([
             'name' => 'required',
             'address' => 'required',
-            'contact_number' => 'required', 'numeric', 'digits:11',
+            'contact_number' => 'required|numeric|digits:11',
             'issue_type' => 'required',
             'description' => 'required',
             'photo' => 'required|image|max:2048',
         ]);
 
-        $imagePath = $request->file('photo')->store('complaints', 'public');
+        try {
+            // TESTING EXCEPTION (Uncomment to test)
+            // throw new \Illuminate\Database\QueryException('Connection Failed', [], new \Exception()); 
 
-        Complaint::create([
-            'user_id' => Auth::id(),
-            'name' => $request->name,
-            'address' => $request->address,
-            'contact_number' => $request->contact_number,
-            'issue_type' => $request->issue_type,
-            'description' => $request->description,
-            'image_path' => $imagePath,
-            'status' => 'Pending', // Default status
-        ]);
+            $this->repo->store($request->all());
 
-        return redirect()->route('complaints.index')->with('success', 'Complaint lodged successfully!');
+            return redirect()->route('complaints.index')
+                ->with('success', 'Complaint lodged successfully!');
+
+        } catch (QueryException $e) {
+            return back()->withInput()->with('error', 'Database Error: Failed to lodge complaint. Please try again later.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'System Error: ' . $e->getMessage());
+        }
     }
 
-    // 4. SHOW SINGLE COMPLAINT DETAILS (Added this for the "View" button)
     public function show($id)
     {
         $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
         return view('complaints.show', compact('complaint'));
     }
 
-    // 5. SHOW EDIT FORM
     public function edit($id)
     {
         $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
 
-        // Security: Prevent editing if already processed
         if ($complaint->status !== 'Pending') {
             return redirect()->route('complaints.index')
                 ->with('error', 'You cannot edit a complaint that is already processed.');
@@ -92,7 +93,6 @@ class ComplaintController extends Controller
         return view('complaints.edit', compact('complaint'));
     }
 
-    // 6. UPDATE COMPLAINT
     public function update(Request $request, $id)
     {
         $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
@@ -103,13 +103,12 @@ class ComplaintController extends Controller
 
         $request->validate([
             'address' => 'required',
-            'contact_number' => 'required', 'numberic', 'digits:11',
-            'issue_type' => 'required',
+            'contact_number' => 'required|numeric|digits:11', 
             'description' => 'required',
             'photo' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->except(['photo', 'name']); // Prevent name change
+        $data = $request->except(['photo', 'name']);
 
         if ($request->hasFile('photo')) {
             if ($complaint->image_path) {
@@ -123,7 +122,6 @@ class ComplaintController extends Controller
         return redirect()->route('complaints.index')->with('success', 'Complaint updated successfully!');
     }
 
-    // 7. DELETE COMPLAINT
     public function destroy($id)
     {
         $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);

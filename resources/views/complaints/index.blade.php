@@ -13,6 +13,12 @@
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
+                        @if(session('error'))
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+                            </div>
+                        @endif
+
                        <div class="card-body p-4">
                         
                         {{-- SEARCH & FILTER FORM --}}
@@ -82,15 +88,8 @@
                                         <td>{{ $complaint->contact_number }}</td>
 
                                         <td>
-                                            @if($complaint->status == 'Pending')
-                                                <span class="badge bg-warning text-dark">Pending</span>
-                                            @elseif($complaint->status == 'In Progress')
-                                                <span class="badge bg-info text-dark">In Progress</span>
-                                            @elseif($complaint->status == 'Resolved')
-                                                <span class="badge bg-success">Resolved</span>
-                                            @else
-                                                <span class="badge bg-secondary">{{ $complaint->status }}</span>
-                                            @endif
+                                            {!! \App\Factories\StatusFactory::getBadge($complaint->status) !!}
+
                                         </td>
 
                                         <td>
