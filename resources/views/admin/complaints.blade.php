@@ -22,7 +22,7 @@
         <div class="card-body">
             
             {{-- ========================================================= --}}
-            {{-- SEARCH & FILTER FORM (Added This Section)                 --}}
+            {{-- SEARCH & FILTER FORM                                      --}}
             {{-- ========================================================= --}}
             <form action="{{ route('admin.complaints') }}" method="GET" class="row g-3 mb-4">
                 
@@ -39,7 +39,7 @@
                 </div>
 
                 {{-- 2. Status Filter --}}
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select name="status" class="form-select">
                         <option value="">All Statuses</option>
                         <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
@@ -48,9 +48,15 @@
                     </select>
                 </div>
 
-                {{-- 3. Filter Button --}}
-                <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-outline-primary">Filter</button>
+                {{-- 3. Action Buttons (Filter & PDF) --}}
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
+                    
+                    {{-- NEW PDF EXPORT BUTTON --}}
+                    {{-- Note: ensure the route 'admin.complaints.exportPdf' exists --}}
+                    <a href="{{ route('admin.complaints.exportPdf', request()->query()) }}" class="btn btn-danger w-100">
+                         <i class="bi bi-file-earmark-pdf"></i> PDF
+                    </a>
                 </div>
             </form>
             {{-- ========================================================= --}}

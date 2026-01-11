@@ -7,6 +7,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 
+Route::get('/admin/complaints/export', [AdminController::class, 'exportPdf'])
+    ->name('admin.complaints.exportPdf');
+
 Route::middleware(['auth', 'admin'])->group(function () {
 Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
     Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
