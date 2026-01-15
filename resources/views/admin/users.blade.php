@@ -1,29 +1,12 @@
-{{-- 
-|--------------------------------------------------------------------------
-| Admin - Residents Info (Users Index)
-|--------------------------------------------------------------------------
-| Purpose:
-|   - Display registered users for admin.
-|   - Provide search/filter by ID, name, or email.
-|   - Allow edit and delete actions.
-|
-| Expected data:
-|   - $users : Illuminate\Pagination\LengthAwarePaginator|Collection<User>
-| Routes used:
-|   - admin.users            (GET)    : list + filter
-|   - admin.users.edit       (GET)    : edit page
-|   - admin.users.destroy    (DELETE) : delete user
-|--------------------------------------------------------------------------
---}}
+
 
 @extends('layouts.admin')
 
 @section('content')
-    {{-- Page title --}}
     <h3 class="fs-4 mb-3 fw-bold">Residents Info</h3>
 
     <div class="card shadow-sm border-0">
-        {{-- Card header --}}
+        {{-- Card  --}}
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold text-secondary">
                 <i class="bi bi-people me-2"></i>Registered Users
@@ -31,7 +14,6 @@
         </div>
 
         <div class="card-body">
-            {{-- Flash messages (success / error) --}}
             @if (session('success'))
                 <div class="alert alert-success mb-3">{{ session('success') }}</div>
             @endif
@@ -40,13 +22,8 @@
                 <div class="alert alert-danger mb-3">{{ session('error') }}</div>
             @endif
 
-            {{-- 
-                Filter form
-                - Uses GET so the query is bookmarkable and visible in the URL.
-                - "search" supports ID, name, or email based on controller logic.
-            --}}
+            {{-- Search & Filter Form --}}
             <form action="{{ route('admin.users') }}" method="GET" class="row g-3 mb-4">
-                {{-- Search input --}}
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
@@ -64,14 +41,13 @@
                     </div>
                 </div>
 
-                {{-- Apply filter --}}
+                {{--  filter --}}
                 <div class="col-md-2 d-grid">
                     <button type="submit" class="btn btn-outline-primary">
                         Filter
                     </button>
                 </div>
 
-                {{-- Reset filter --}}
                 <div class="col-md-2 d-grid">
                     <a href="{{ route('admin.users') }}" class="btn btn-outline-secondary">
                         Clear
@@ -102,7 +78,6 @@
 
                                 <td>
                                     <div class="d-flex gap-2">
-                                        {{-- Navigate to edit screen --}}
                                         <a
                                             href="{{ route('admin.users.edit', $user->id) }}"
                                             class="btn btn-sm btn-primary"
@@ -112,8 +87,7 @@
 
                                         {{-- 
                                             Delete user
-                                            - Uses method spoofing (DELETE) and CSRF protection.
-                                            - Simple confirm dialog to prevent accidental deletes.
+                                            
                                         --}}
                                         <form
                                             action="{{ route('admin.users.destroy', $user->id) }}"
@@ -131,7 +105,7 @@
                                 </td>
                             </tr>
                         @empty
-                            {{-- Empty state --}}
+                            {{-- Empty  --}}
                             <tr>
                                 <td colspan="5" class="text-center py-4 text-muted">
                                     No users found.
@@ -141,13 +115,6 @@
                     </tbody>
                 </table>
             </div>
-
-            {{-- Optional: pagination (uncomment if $users is paginated) --}}
-            {{--
-            <div class="mt-3">
-                {{ $users->links() }}
-            </div>
-            --}}
         </div>
     </div>
 @endsection

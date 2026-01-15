@@ -75,7 +75,7 @@
                     </div>
                 </div>
 
-                {{-- 3. UPDATE PASSWORD CARD --}}
+                {{-- 3. UPDATE PASSWORD CARD  --}}
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-white py-3 border-bottom">
                         <h5 class="mb-0 fw-bold text-primary">
@@ -88,24 +88,46 @@
                             @method('put')
 
                             <div class="mb-3">
-                                <label for="current_password" class="form-label fw-bold text-secondary">Current Password</label>
-                                <input type="password" class="form-control" id="current_password" name="current_password" autocomplete="current-password">
-                                @error('current_password') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                                <label for="update_password_current_password" class="form-label fw-bold text-secondary">Current Password</label>
+                                <input type="password" class="form-control" id="update_password_current_password" name="current_password" autocomplete="current-password">
+                                
+                                @if($errors->updatePassword->has('current_password'))
+                                    <div class="text-danger small mt-1">
+                                        {{ $errors->updatePassword->first('current_password') }}
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="mb-3">
-                                <label for="password" class="form-label fw-bold text-secondary">New Password</label>
-                                <input type="password" class="form-control" id="password" name="password" autocomplete="new-password">
-                                @error('password') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                                <label for="update_password_password" class="form-label fw-bold text-secondary">New Password</label>
+                                <input type="password" class="form-control" id="update_password_password" name="password" autocomplete="new-password">
+                                
+                                @if($errors->updatePassword->has('password'))
+                                    <div class="text-danger small mt-1">
+                                        {{ $errors->updatePassword->first('password') }}
+                                    </div>
+                                @endif
                             </div>
 
+                            {{-- Confirm Password --}}
                             <div class="mb-3">
-                                <label for="password_confirmation" class="form-label fw-bold text-secondary">Confirm New Password</label>
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" autocomplete="new-password">
-                                @error('password_confirmation') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                                <label for="update_password_password_confirmation" class="form-label fw-bold text-secondary">Confirm New Password</label>
+                                <input type="password" class="form-control" id="update_password_password_confirmation" name="password_confirmation" autocomplete="new-password">
+                                
+                                @if($errors->updatePassword->has('password_confirmation'))
+                                    <div class="text-danger small mt-1">
+                                        {{ $errors->updatePassword->first('password_confirmation') }}
+                                    </div>
+                                @endif
                             </div>
 
-                            <div class="d-flex justify-content-end">
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                @if (session('status') === 'password-updated')
+                                    <span class="text-success small fw-bold" x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)">
+                                        <i class="bi bi-check-circle me-1"></i>Saved.
+                                    </span>
+                                @endif
+
                                 <button type="submit" class="btn btn-primary px-4">
                                     <i class="bi bi-shield-lock me-1"></i>Update Password
                                 </button>

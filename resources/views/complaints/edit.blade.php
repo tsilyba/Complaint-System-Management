@@ -2,20 +2,14 @@
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                
-                {{-- CARD CONTAINER --}}
                 <div class="card shadow-sm border-0">
-                    {{-- HEADER --}}
                     <div class="card-header bg-warning text-dark py-3">
                         <h4 class="mb-0 fw-bold">
                             <i class="bi bi-pencil-fill me-2"></i>Edit Complaint #{{ $complaint->id }}
                         </h4>
                     </div>
 
-                    {{-- BODY --}}
                     <div class="card-body p-4">
-                        
-                        {{-- Validation Errors --}}
                         @if ($errors->any())
                             <div class="alert alert-danger">
                                 <ul class="mb-0">

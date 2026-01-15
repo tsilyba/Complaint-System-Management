@@ -1,6 +1,6 @@
 <x-guest-layout>
     
-    {{-- Header Section --}}
+    {{-- Header --}}
     <div class="text-center mb-4">
         <h3 class="fw-bold text-primary">Join the Community</h3>
         <p class="text-muted small">Create your resident account to get started.</p>
@@ -16,7 +16,7 @@
                     <i class="bi bi-person-fill"></i>
                 </span>
                 <input id="name" type="text" name="name" class="form-control border-start-0" 
-                       value="{{ old('name') }}" required autofocus placeholder="Your Full Name">
+                       value="{{ old('name') }}" required autofocus placeholder="Full Name">
             </div>
             <x-input-error :messages="$errors->get('name')" class="text-danger small mt-1" />
         </div>
@@ -28,7 +28,7 @@
                     <i class="bi bi-envelope-fill"></i>
                 </span>
                 <input id="email" type="email" name="email" class="form-control border-start-0" 
-                       value="{{ old('email') }}" required placeholder="name@example.com">
+                       value="{{ old('email') }}" required placeholder="name@gmail.com">
             </div>
             <x-input-error :messages="$errors->get('email')" class="text-danger small mt-1" />
         </div>
@@ -52,14 +52,14 @@
                     <i class="bi bi-shield-lock-fill"></i>
                 </span>
                 <input id="password_confirmation" type="password" name="password_confirmation" class="form-control border-start-0" 
-                       required placeholder="Repeat password">
+                       required placeholder="Confirm password">
             </div>
             <x-input-error :messages="$errors->get('password_confirmation')" class="text-danger small mt-1" />
         </div>
 
         <div class="d-grid gap-2">
             <button type="submit" class="btn btn-primary py-2 fw-bold shadow-sm">
-                <i class="bi bi-person-plus-fill me-2"></i>Register
+                <i class="bi me-2"></i>Register
             </button>
         </div>
 

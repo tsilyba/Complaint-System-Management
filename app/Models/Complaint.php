@@ -24,4 +24,9 @@ class Complaint extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function deleteComplaint()
+    {
+        return $this->status === 'Pending';
+    }
 }

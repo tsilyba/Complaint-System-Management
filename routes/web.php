@@ -14,8 +14,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
     Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
-    Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-});
+    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.destroy');});
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,6 +52,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/residents', [AdminController::class, 'users'])->name('residents');
     Route::get('/complaints', [AdminController::class, 'complaints'])->name('complaints');
     Route::patch('/complaint/{id}/status', [AdminController::class, 'updateStatus'])->name('updateStatus');
+   // Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.destroy');
+
 });
+
 
 require __DIR__.'/auth.php';

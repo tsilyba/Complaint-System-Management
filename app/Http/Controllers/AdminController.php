@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Complaint; // Imported for direct querying in reports
+use App\Models\Complaint; 
 use App\Facades\ComplaintFacade; 
 use App\Repositories\SQLComplaintRepo;
-use Barryvdh\DomPDF\Facade\Pdf; // <--- 1. NEW IMPORT
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AdminController extends Controller
 {
@@ -46,13 +49,23 @@ class AdminController extends Controller
             'status' => 'required|in:Pending,In Progress,Resolved'
         ]);
 
-        $result = $this->facade->updateStatus($id, $request->status);
+        try {
+            //  update via Facade (Database + Email)
+            $result = $this->facade->updateStatus($id, $request->status);
 
-        if ($result) {
+            if (!$result) {
+                throw new \Exception("System unable to find or update the complaint.");
+            }
+
             return redirect()->back()->with('success', 'Status updated & Notification sent to Resident!');
-        }
 
-        return redirect()->back()->with('error', 'Failed to update status.');
+        } catch (QueryException $e) {
+            // Handle Database Failures
+            return redirect()->back()->with('error', 'Database Error: Unable to save status change.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Update Failed: ' . $e->getMessage());
+        }
     }
 
     public function users()
@@ -90,54 +103,60 @@ class AdminController extends Controller
     // 5. NEW EXPORT PDF METHOD
     public function exportPdf(Request $request)
     {
-        // Start Query (Same as complaints method)
-        $query = Complaint::with('user')->latest();
+        try {
+            $query = Complaint::with('user')->latest();
 
-        // 1. Re-apply Search Filter
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('id', 'LIKE', "%$search%")             
-                  ->orWhere('description', 'LIKE', "%$search%")  
-                  ->orWhere('issue_type', 'LIKE', "%$search%")   
-                  ->orWhereHas('user', function($userQuery) use ($search) {
-                      $userQuery->where('name', 'LIKE', "%$search%");
-                  });
-            });
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('id', 'LIKE', "%$search%")             
+                      ->orWhere('description', 'LIKE', "%$search%")  
+                      ->orWhere('issue_type', 'LIKE', "%$search%")   
+                      ->orWhereHas('user', function($userQuery) use ($search) {
+                          $userQuery->where('name', 'LIKE', "%$search%");
+                      });
+                });
+            }
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            $complaints = $query->get();
+            $pdf = Pdf::loadView('complaints.pdf', compact('complaints'));
+            
+            return $pdf->download('admin_complaints_report.pdf');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'PDF Generation Failed: ' . $e->getMessage());
         }
-
-        // 2. Re-apply Status Filter
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // 3. Get All Data (Use get() instead of paginate())
-        $complaints = $query->get();
-
-        // 4. Generate PDF
-        // You can reuse the 'complaints.pdf' view we created earlier
-        $pdf = Pdf::loadView('complaints.pdf', compact('complaints'));
-        
-        return $pdf->download('admin_complaints_report.pdf');
     }
 
     // 6. User Management
-    public function deleteUser($id)
-    {
-        $user = User::find($id);
-        if ($user && !$user->is_admin) {
-            $user->delete();
-            return redirect()->back()->with('success', 'User deleted successfully.');
-        }
-        return redirect()->back()->with('error', 'User not found or cannot delete admin.');
-    }
 
-    public function editUser($id)
-    {
-        $user = User::find($id);
-        if ($user && !$user->is_admin) {
-            return view('admin.edit_user', compact('user'));
+public function deleteUser($id)
+{
+    try {
+        $user = User::findOrFail($id);
+
+        // FIXED LINE: Use 'Auth::id()' instead of 'auth()->id()'
+        // Also simplified '$user->getAttribute('id')' to '$user->id'
+        if ($user->id === Auth::id()) {
+            throw new \Exception("Operation Denied: You cannot delete your own account while logged in.");
         }
-        return redirect()->back()->with('error', 'User not found or cannot edit admin.');
+
+    if ($user->getAttribute('is_admin') == 1) {
+    throw new \Exception("Security Violation: You cannot delete an Administrator account.");
+}
+
+        $user->delete();
+        
+        return redirect()->back()->with('success', 'User deleted successfully.');
+
+    } catch (ModelNotFoundException $e) {
+        return redirect()->back()->with('error', 'Error: User ID not found.');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', $e->getMessage());
     }
+}
 }

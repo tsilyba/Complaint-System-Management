@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Kampung Sentosa') }}</title>
 
-    {{-- Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    {{-- Bootstrap Icons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    {{-- Custom CSS --}}
     <link rel="stylesheet" href="{{ asset('css/resident.css') }}">
 </head>
 <body class="bg-light">
@@ -27,7 +24,6 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                {{-- LEFT SIDE LINKS --}}
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('dashboard') ? 'active fw-bold' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
@@ -40,23 +36,20 @@
                     </li>
                 </ul>
 
-                {{-- RIGHT SIDE: NOTIFICATIONS & PROFILE --}}
                 <ul class="navbar-nav ms-auto align-items-center">
                     
-                    {{-- 1. NOTIFICATION BELL (Added This) --}}
+                    {{-- 1. NOTIFICATION BELL --}}
                     @auth
                     <li class="nav-item me-3">
                         <a class="nav-link position-relative text-white" href="{{ route('notifications.index') }}">
                             <i class="bi bi-bell-fill" style="font-size: 1.2rem;"></i>
                             
-                            {{-- PHP Logic to count unread notifications --}}
                             @php
                                 $unreadCount = \App\Models\Notification::where('user_id', Auth::id())
                                                 ->where('is_read', false)
                                                 ->count();
                             @endphp
 
-                            {{-- Only show Red Badge if count > 0 --}}
                             @if($unreadCount > 0)
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
                                     {{ $unreadCount }}
@@ -72,7 +65,6 @@
                     @auth
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white fw-semibold" href="#" role="button" data-bs-toggle="dropdown">
-                            {{-- Optional: Add a simple avatar icon --}}
                             <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow">

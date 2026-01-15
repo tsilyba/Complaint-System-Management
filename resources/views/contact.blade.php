@@ -1,7 +1,6 @@
 <x-app-layout>
     <div class="container py-5">
         
-        {{-- SECTION 1: CONTACT INFO CARDS --}}
         <div class="card border-0 shadow-sm mb-5">
             <div class="card-body p-5 text-center">
                 
@@ -64,10 +63,7 @@
         <div class="text-center">
             <h3 class="fw-bold mb-4">Our Location</h3>
             <div class="card shadow-sm border-0 overflow-hidden">
-                {{-- 
-                    Google Map Embed
-                    You can replace the "src" below with your exact location link from Google Maps if needed.
-                --}}
+               
                 <iframe 
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.452899745354!2d101.693202!3d3.147273!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc3627a810d29f%3A0x63391740924976f6!2sKuala%20Lumpur!5e0!3m2!1sen!2smy!4v1689234567890!5m2!1sen!2smy" 
                     width="100%" 

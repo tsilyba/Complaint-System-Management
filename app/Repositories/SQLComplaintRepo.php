@@ -5,25 +5,23 @@ namespace App\Repositories;
 use App\Models\Complaint; //
 
 class SQLComplaintRepo{
-    /**
-     * Get all complaints (For the Admin Dashboard)
-     */
+   
+     //Get all complaints (For the Admin Dashboard)
+    
     public function getAll()
     {
         return Complaint::with('user')->latest()->get();
     }
 
-    /**
-     * Find a specific complaint by ID
-     */
+    
+    //Find a specific complaint by ID
+     
     public function find($id)
     {
         return Complaint::find($id);
     }
 
-    /**
-     * Update status of a complaint
-     */
+   // Update complaint status
     public function updateStatus($id, $newStatus)
     {
         $complaint = Complaint::find($id);
@@ -37,9 +35,7 @@ class SQLComplaintRepo{
         return null;
     }
 
-    /**
-     * Save a new complaint (For Submission Form)
-     */
+    //save new complaint
     public function store($data)
     {
         $complaint = new Complaint();

@@ -2,26 +2,23 @@
 
 @section('content')
 
-    {{-- Page Title --}}
     <h3 class="fs-4 mb-3 fw-bold">Edit User</h3>
-
-    {{-- Main Card Container --}}
     <div class="card shadow-sm border-0">
 
-        {{-- Card Header --}}
+        {{--  Header --}}
         <div class="card-header bg-white py-3">
             <h5 class="mb-0 fw-bold text-secondary">
                 Update Resident Information
             </h5>
         </div>
 
-        {{-- Card Body --}}
+        {{--  Body --}}
         <div class="card-body">
 
             {{-- Update User Form --}}
             <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                 @csrf
-                @method('PUT') {{-- Method spoofing for HTTP PUT request --}}
+                @method('PUT')
 
                 {{-- User Name Input --}}
                 <div class="mb-3">
@@ -75,7 +72,7 @@
                         Save Changes
                     </button>
 
-                    {{-- Back Navigation --}}
+                    {{-- Back --}}
                     <a href="{{ route('admin.users') }}" class="btn btn-secondary">
                         Back
                     </a>

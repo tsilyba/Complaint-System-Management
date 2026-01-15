@@ -9,13 +9,9 @@ use App\Services\NotificationService;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        // Bind the ComplaintFacade to the Service Container
-        // This tells Laravel: "When someone asks for ComplaintFacade, create it like this:"
+        // Binding ComplaintFacade
         $this->app->bind(ComplaintFacade::class, function ($app) {
             return new ComplaintFacade(
                 new SQLComplaintRepo(),      
@@ -23,11 +19,6 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        //
-    }
+    
+    
 }

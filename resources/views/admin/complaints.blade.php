@@ -21,12 +21,9 @@
 
         <div class="card-body">
             
-            {{-- ========================================================= --}}
-            {{-- SEARCH & FILTER FORM                                      --}}
-            {{-- ========================================================= --}}
+            {{-- SEARCH & FILTER FORM --}}
             <form action="{{ route('admin.complaints') }}" method="GET" class="row g-3 mb-4">
-                
-                {{-- 1. Search Box --}}
+                {{-- Search Box --}}
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0">
@@ -38,7 +35,7 @@
                     </div>
                 </div>
 
-                {{-- 2. Status Filter --}}
+                {{-- Status Filter --}}
                 <div class="col-md-3">
                     <select name="status" class="form-select">
                         <option value="">All Statuses</option>
@@ -48,18 +45,14 @@
                     </select>
                 </div>
 
-                {{-- 3. Action Buttons (Filter & PDF) --}}
+                {{-- Action Buttons --}}
                 <div class="col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
-                    
-                    {{-- NEW PDF EXPORT BUTTON --}}
-                    {{-- Note: ensure the route 'admin.complaints.exportPdf' exists --}}
                     <a href="{{ route('admin.complaints.exportPdf', request()->query()) }}" class="btn btn-danger w-100">
                          <i class="bi bi-file-earmark-pdf"></i> PDF
                     </a>
                 </div>
             </form>
-            {{-- ========================================================= --}}
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -68,6 +61,7 @@
                             <th class="ps-4">Complaint ID</th>
                             <th>Resident Name</th>
                             <th>Issue Type</th>
+                            <th>Photo</th> 
                             <th>Description</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -85,8 +79,36 @@
                             <td>
                                 <span class="badge bg-secondary mb-1">{{ $complaint->issue_type }}</span>
                             </td>
+                            
                             <td>
-                                <span class="text-muted small d-inline-block text-truncate" style="max-width: 250px;">
+                                @if($complaint->image_path)
+                                    <img src="{{ asset('storage/' . $complaint->image_path) }}" 
+                                         alt="Evidence" 
+                                         class="img-thumbnail" 
+                                         style="width: 50px; height: 50px; object-fit: cover; cursor: pointer;"
+                                         data-bs-toggle="modal" 
+                                         data-bs-target="#imageModal{{ $complaint->id }}">
+
+                                    <div class="modal fade" id="imageModal{{ $complaint->id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Evidence for Complaint #{{ $complaint->id }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-center bg-light">
+                                                    <img src="{{ asset('storage/' . $complaint->image_path) }}" class="img-fluid rounded shadow-sm" alt="Full Evidence">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-muted small italic">No Image</span>
+                                @endif
+                            </td>
+
+                            <td>
+                                <span class="text-muted small d-inline-block text-truncate" style="max-width: 200px;">
                                     {{ $complaint->description }}
                                 </span>
                             </td>
@@ -119,7 +141,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
+                            <td colspan="7" class="text-center py-5 text-muted">
                                 <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
                                 No complaints found matching your filters.
                             </td>

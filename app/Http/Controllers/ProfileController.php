@@ -8,12 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Database\QueryException;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
+   //view profile
     public function edit(Request $request): View
     {
         return view('profile.edit', [
@@ -21,40 +20,53 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    //update profile
+   public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        try {
+            $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+            if ($request->user()->isDirty('email')) {
+                $request->user()->email_verified_at = null;
+            }
+
+            $request->user()->save();
+
+            return Redirect::route('profile.edit')->with('status', 'profile-updated');
+
+        } catch (QueryException $e) {
+            return Redirect::route('profile.edit')->with('error', 'Database Error: Failed to update profile.');
+        } catch (\Exception $e) {
+            return Redirect::route('profile.edit')->with('error', 'Update Failed: ' . $e->getMessage());
         }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    /**
-     * Delete the user's account.
-     */
+    // delete profile
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        Auth::logout();
+            // Logout first
+            Auth::logout();
 
-        $user->delete();
+            // Attempt to delete user record
+            $user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+            return Redirect::to('/');
+
+        } catch (QueryException $e) {
+            return Redirect::route('login')->with('error', 'Account deletion failed due to a database error.');
+            
+        } catch (\Exception $e) {
+            return Redirect::route('login')->with('error', 'System Error: ' . $e->getMessage());
+        }
     }
 }

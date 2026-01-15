@@ -3,7 +3,6 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 
-                {{-- Header Section --}}
                 <div class="mb-4 d-flex justify-content-between align-items-center">
                     <div>
                         <h2 class="fw-bold text-dark mb-1">
@@ -15,10 +14,10 @@
           
                 </div>
 
-                {{-- Notifications Card --}}
+                {{-- Notifications  --}}
                 <div class="card shadow-sm border-0">
                     
-                    {{-- Card Header --}}
+                    {{-- Card  --}}
                     <div class="card-header bg-primary text-white py-3 border-0">
                         <h5 class="mb-0 fw-bold">
                             <i class="bi bi-list-ul me-2 text-white"></i>All Notifications
@@ -40,11 +39,7 @@
                             <div class="list-group list-group-flush">
                                 @foreach($notifications as $notification)
 
-                                    {{-- 
-                                        FIX: 
-                                        1. Removed 'border-primary' to stop the Blue color.
-                                        2. Added inline style to FORCE Brown border on unread items.
-                                    --}}
+                                   
                                     <div class="list-group-item list-group-item-action p-4 d-flex flex-column align-items-start 
                                         {{ $notification->is_read ? 'bg-light text-muted' : 'bg-white border-start border-5' }}"
                                         style="{{ !$notification->is_read ? 'border-color: #6d4c41 !important;' : '' }}">

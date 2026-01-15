@@ -14,12 +14,7 @@
         </div>
     </div>
 
-    {{-- MAIN LAYOUT: Split Left (Cards) & Right (Chart) --}}
     <div class="row g-4">
-        
-        {{-- ========================================= --}}
-        {{-- LEFT COLUMN: STAT CARDS (Stacked)         --}}
-        {{-- ========================================= --}}
         <div class="col-lg-4 col-xl-3">
             <div class="row g-3">
                 
@@ -86,9 +81,6 @@
             </div>
         </div>
 
-        {{-- ========================================= --}}
-        {{-- RIGHT COLUMN: LARGE CHART                 --}}
-        {{-- ========================================= --}}
         <div class="col-lg-8 col-xl-9">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3 border-0 d-flex align-items-center">
@@ -107,7 +99,6 @@
 
     </div>
 
-    {{-- CHART SCRIPT --}}
     <script>
         const ctx = document.getElementById('statusChart').getContext('2d');
         new Chart(ctx, {
@@ -127,11 +118,11 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Allows chart to fill container
-                cutout: '75%', // Thinner elegant ring
+                maintainAspectRatio: false, 
+                cutout: '75%', 
                 plugins: {
                     legend: {
-                        position: 'right', // Legend on the right side of the chart looks cleaner here
+                        position: 'right', 
                         labels: {
                             padding: 20,
                             usePointStyle: true,

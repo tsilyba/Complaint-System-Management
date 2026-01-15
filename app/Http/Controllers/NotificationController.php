@@ -10,7 +10,6 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        // Fetch notifications for the logged-in user, newest first
         $notifications = Notification::where('user_id', Auth::id())
                                      ->latest()
                                      ->get();
@@ -18,7 +17,6 @@ class NotificationController extends Controller
         return view('notifications.index', compact('notifications'));
     }
 
-    // Optional: Mark as read
     public function markAsRead($id)
     {
         $notification = Notification::where('user_id', Auth::id())->findOrFail($id);

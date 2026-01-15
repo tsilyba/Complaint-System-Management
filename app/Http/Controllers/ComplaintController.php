@@ -8,6 +8,8 @@ use App\Repositories\SQLComplaintRepo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class ComplaintController extends Controller
 {
@@ -75,10 +77,14 @@ class ComplaintController extends Controller
         }
     }
 
-    public function show($id)
+  public function show($id)
     {
-        $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
-        return view('complaints.show', compact('complaint'));
+        try {
+            $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
+            return view('complaints.show', compact('complaint'));
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('complaints.index')->with('error', 'Complaint not found.');
+        }
     }
 
     public function edit($id)
@@ -124,18 +130,28 @@ class ComplaintController extends Controller
 
     public function destroy($id)
     {
-        $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
+        try {
+            $complaint = Complaint::where('user_id', Auth::id())->findOrFail($id);
 
-        if ($complaint->status !== 'Pending') {
-             return back()->with('error', 'Cannot delete a complaint that is currently being processed.');
+            // Logic Check (Replaces your if-return)
+            if (!$complaint->deleteComplaint()) {
+                 throw new \Exception('Action Failed: Cannot delete a complaint that is currently being processed.');
+            }
+
+            // Safe File Deletion
+            if ($complaint->image_path && Storage::disk('public')->exists($complaint->image_path)) {
+                Storage::disk('public')->delete($complaint->image_path);
+            }
+
+            $complaint->delete();
+
+            return redirect()->route('complaints.index')->with('success', 'Complaint deleted successfully.');
+
+        } catch (ModelNotFoundException $e) {
+            return back()->with('error', 'Error: Complaint not found.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        if ($complaint->image_path) {
-            Storage::disk('public')->delete($complaint->image_path);
-        }
-
-        $complaint->delete();
-
-        return redirect()->route('complaints.index')->with('success', 'Complaint deleted successfully.');
     }
 }

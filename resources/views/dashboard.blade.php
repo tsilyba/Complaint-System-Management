@@ -9,8 +9,6 @@
 
                     <div class="card-body p-5">
                         
-                        {{-- 1. EAI FEEDBACK UI: Display Success/Error Messages --}}
-                        {{-- This catches the 'success' message sent from your Controller/Facade --}}
                         @if(session('success'))
                             <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
                                 <i class="bi bi-check-circle-fill me-2"></i>
@@ -28,8 +26,6 @@
                         @endif
 
                        
-                        {{-- 2. DASHBOARD CONTENT --}}
-                        {{-- 3. WELCOME SECTION & ACTION BUTTON --}}
         <div class="row mb-5 align-items-center">
             <div class="col-md-8">
                 <h2 class="fw-bold text-primary mb-1">Welcome back, {{ Auth::user()->name }}!</h2>
@@ -44,7 +40,6 @@
             </div>
         </div>
 
-        {{-- 4. STATUS CARDS (Dynamic Data) --}}
         <div class="row g-4 mb-5">
             {{-- Card 1: Active Issues --}}
             <div class="col-md-4">
@@ -64,7 +59,6 @@
                 </div>
             </div>
 
-            {{-- Card 2: Resolved Issues --}}
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
                     <div class="card-body p-4">
@@ -81,7 +75,6 @@
                 </div>
             </div>
 
-            {{-- Card 3: Total Reports --}}
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
                     <div class="card-body p-4">
@@ -98,7 +91,13 @@
             </div>
         </div>
 
-        {{-- 5. RECENT ACTIVITY TABLE --}}
+        <!-- view history button -->
+        <div class="d-flex justify-content-end mb-4">
+            <a href="{{ route('complaints.index') }}" class="btn btn-outline-primary">
+                <i class="bi bi-clock-history me-2"></i>View Full Complaint History
+            </a>
+        </div>
+
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-clock-history me-2"></i>Recent Activity</h5>
@@ -116,7 +115,6 @@
                         </thead>
                         <tbody>
                             @php
-                                // Fetch last 3 complaints for this user
                                 $recentComplaints = \App\Models\Complaint::where('user_id', Auth::id())
                                                     ->latest()
                                                     ->take(3)

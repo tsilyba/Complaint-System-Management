@@ -22,18 +22,17 @@ class NotificationService
                         ->subject($subject);
             });
 
-            Log::info("EAI Notification Sent: Email dispatched to {$email} for Complaint #{$complaintId}");
+            Log::info(" Notification Sent: Email dispatched to {$email} for Complaint #{$complaintId}");
 
         } catch (\Exception $e) {
             // EAI Reliability: If email fails, log it but don't crash.
             Log::error("EAI Notification Failed: " . $e->getMessage());
         }
 
-        // 3. Save to Database (In-App Notification) <--- NEW PART
-        // This makes the "Yellow Button" on the dashboard work.
+        // 3. Save to Database (In-App Notification)
         try {
             Notification::create([
-                'user_id' => $userId, // Links to the specific resident
+                'user_id' => $userId, 
                 'title'   => "Complaint #{$complaintId} Updated",
                 'message' => "Your complaint status is now: {$newStatus}",
                 'is_read' => false
